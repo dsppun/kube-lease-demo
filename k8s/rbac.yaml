@@ -1,14 +1,15 @@
-# Without this, the pod gets "403 Forbidden" the moment it touches a Lease.
+# Apply this BEFORE the Deployment.
+# Without it, the pod gets "403 Forbidden" the moment it touches a Lease.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: lease-worker
+  name: kube-lease-demo
   namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: lease-worker
+  name: kube-lease-demo
   namespace: default
 rules:
   - apiGroups: ["coordination.k8s.io"]
@@ -18,13 +19,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: lease-worker
+  name: kube-lease-demo
   namespace: default
 subjects:
   - kind: ServiceAccount
-    name: lease-worker
+    name: kube-lease-demo
     namespace: default
 roleRef:
   kind: Role
-  name: lease-worker
+  name: kube-lease-demo
   apiGroup: rbac.authorization.k8s.io
