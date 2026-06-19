@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lease-worker
+  name: kube-lease-demo
   namespace: default
   labels:
-    app: lease-worker
+    app: kube-lease-demo
 spec:
   replicas: 2                      # two pods, but only one is active at a time
   selector:
     matchLabels:
-      app: lease-worker
+      app: kube-lease-demo
   template:
     metadata:
       labels:
-        app: lease-worker
+        app: kube-lease-demo
     spec:
-      serviceAccountName: lease-worker   # ties the pod to the RBAC above
+      serviceAccountName: kube-lease-demo   # ties the pod to the RBAC above
       containers:
         - name: worker
-          image: YOUR_REGISTRY/lease-worker:1.0   # <-- change this
+          image: YOUR_REGISTRY/kube-lease-demo:1.0   # <-- change this
           imagePullPolicy: IfNotPresent
           env:
             # Each pod gets its own name -> unique holderIdentity in the Lease
@@ -27,7 +27,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: LEASE_NAME
-              value: "my-worker-lease"
+              value: "kube-lease-demo"
             - name: LEASE_NAMESPACE
               value: "default"
             - name: LEASE_DURATION
