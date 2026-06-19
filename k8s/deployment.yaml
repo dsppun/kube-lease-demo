@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lease-worker
+  namespace: default
+  labels:
+    app: lease-worker
+spec:
+  replicas: 2                      # two pods, but only one is active at a time
+  selector:
+    matchLabels:
+      app: lease-worker
+  template:
+    metadata:
+      labels:
+        app: lease-worker
+    spec:
+      serviceAccountName: lease-worker   # ties the pod to the RBAC above
+      containers:
+        - name: worker
+          image: YOUR_REGISTRY/lease-worker:1.0   # <-- change this
+          imagePullPolicy: IfNotPresent
+          env:
+            # Each pod gets its own name -> unique holderIdentity in the Lease
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LEASE_NAME
+              value: "my-worker-lease"
+            - name: LEASE_NAMESPACE
+              value: "default"
+            - name: LEASE_DURATION
+              value: "15"
+            - name: RENEW_DEADLINE
+              value: "10"
+            - name: RETRY_PERIOD
+              value: "2"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"

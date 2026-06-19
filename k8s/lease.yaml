@@ -1,0 +1,14 @@
+# OPTIONAL. You usually don't need to apply this — the app creates the Lease
+# automatically on first run (the "if lease is None: create" path in the code).
+#
+# Apply it yourself only if you want the object to exist before any pod starts.
+# holderIdentity is left empty so the first pod can claim it.
+apiVersion: coordination.k8s.io/v1
+kind: Lease
+metadata:
+  name: my-worker-lease
+  namespace: default
+spec:
+  holderIdentity: ""
+  leaseDurationSeconds: 15
+  leaseTransitions: 0
